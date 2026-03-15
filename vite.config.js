@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': { target: 'http://localhost:8080', changeOrigin: true, secure: false }
+      '/api': { target: 'https://lostfound-backend-8u9x.onrender.com', changeOrigin: true, secure: false }
     }
   }
 })
