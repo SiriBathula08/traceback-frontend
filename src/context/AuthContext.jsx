@@ -21,23 +21,24 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = useCallback(async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password })
-    const p = data.data
-    localStorage.setItem('tb_token', p.accessToken)
-    localStorage.setItem('tb_user',  JSON.stringify(p))
-    setUser(p)
-    return p
-  }, [])
+  const { data } = await api.post('/auth/login', { email, password })
+  const p = data.data
+  localStorage.setItem('tb_token', p.accessToken)
+  localStorage.setItem('tb_user', JSON.stringify(p))
+  setUser(p)
+  return p
+}, [])
 
-  const register = useCallback(async (form) => {
-    const { data } = await api.post('/auth/register', form)
-    const p = data.data
-    localStorage.setItem('tb_token', p.accessToken)
-    localStorage.setItem('tb_user',  JSON.stringify(p))
-    setUser(p)
-    return p
-  }, [])
+const register = useCallback(async (form) => {
+  const { data } = await api.post('/auth/register', form)
+  const p = data.data
+  localStorage.setItem('tb_token', p.accessToken)
+  localStorage.setItem('tb_user', JSON.stringify(p))
+  setUser(p)
+  return p
+}, [])
 
+   
   const logout = useCallback(() => {
     localStorage.removeItem('tb_token')
     localStorage.removeItem('tb_user')
@@ -48,7 +49,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{
       user, loading,
       isAuthenticated: !!user,
-      isAdmin: user?.role === 'ADMIN',
+      isAdmin: user?.role?.includes('ADMIN'),
       login, register, logout,
     }}>
       {children}
