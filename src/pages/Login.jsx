@@ -25,7 +25,7 @@ export default function Login() {
     try {
       const user = await login(email.trim(), password)
       toast.success(`Welcome back!`)
-      navigate(user.role?.includes('ADMIN') ? '/admin' : from, { replace: true })
+      navigate('/', { replace: true })
     } catch (err) {
       const msg = err.response?.data?.message || 'Invalid email or password'
       toast.error(msg)
