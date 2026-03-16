@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-// Hardcoded for Render deployment
 const api = axios.create({
   baseURL: 'https://lostfound-backend-8u9x.onrender.com/api',
   headers: { 'Content-Type': 'application/json' },
@@ -11,12 +10,17 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('tb_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
+  console.log('REQUEST:', config.method?.toUpperCase(), config.baseURL + config.url)
   return config
 }, Promise.reject)
 
 api.interceptors.response.use(
-  r => r,
+  r => {
+    console.log('RESPONSE:', r.config.url, r.status, r.data)
+    return r
+  },
   err => {
+    console.error('ERROR:', err.config?.url, err.response?.status, err.response?.data)
     if (err.response?.status === 401) {
       localStorage.removeItem('tb_token')
       localStorage.removeItem('tb_user')
