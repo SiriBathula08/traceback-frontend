@@ -1,33 +1,35 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://lostfound-backend-8u9x.onrender.com/api',
+  baseURL: 'https://lostfound-backend-8u9x.onrender.com',
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
 })
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('tb_token')
-  const url = config.url || ''
 
-  const isAuthRequest =
-    url.includes('/auth/login') || url.includes('/auth/register')
-
-  if (token && !isAuthRequest) {
+  // Do not attach token for login/register
+  if (
+    token &&
+    !config.url.includes('/auth/login') &&
+    !config.url.includes('/auth/register')
+  ) {
     config.headers.Authorization = `Bearer ${token}`
   }
 
   return config
-}, Promise.reject)
+})
 
 api.interceptors.response.use(
-  r => r,
-  err => {
-    if (err.response?.status === 401) {
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
       localStorage.removeItem('tb_token')
       localStorage.removeItem('tb_user')
       window.dispatchEvent(new Event('tb:logout'))
     }
-    return Promise.reject(err)
+    return Promise.reject(error)
   }
 )
 
