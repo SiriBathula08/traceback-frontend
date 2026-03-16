@@ -6,7 +6,12 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': { target: 'https://lostfound-backend-8u9x.onrender.com', changeOrigin: true, secure: false }
+      // Only used in local dev when VITE_API_URL is not set
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      }
     }
   }
 })
