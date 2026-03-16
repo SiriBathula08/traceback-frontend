@@ -1,12 +1,11 @@
 import axios from 'axios'
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://lostfound-backend-8u9x.onrender.com'
-
+// Hardcoded for Render deployment
 const api = axios.create({
-  baseURL: `${BACKEND_URL}/api`,
+  baseURL: 'https://lostfound-backend-8u9x.onrender.com/api',
   headers: { 'Content-Type': 'application/json' },
-  timeout: 30000, // 30s - Render free tier spins down, needs time to wake
-  withCredentials: false, // must be false when using Authorization header
+  timeout: 30000,
+  withCredentials: false,
 })
 
 api.interceptors.request.use((config) => {
