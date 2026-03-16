@@ -10,7 +10,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const u = localStorage.getItem('tb_user')
     const t = localStorage.getItem('tb_token')
-    if (u && t) setUser(JSON.parse(u))
+    if (u && t) {
+      try { setUser(JSON.parse(u)) } catch { localStorage.clear() }
+    }
     setLoading(false)
   }, [])
 
@@ -21,24 +23,25 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = useCallback(async (email, password) => {
-  const { data } = await api.post('/auth/login', { email, password })
-  const p = data.data
-  localStorage.setItem('tb_token', p.accessToken)
-  localStorage.setItem('tb_user', JSON.stringify(p))
-  setUser(p)
-  return p
-}, [])
+    const { data } = await api.post('/auth/login', { email, password })
+    const p = data.data
+    if (!p || !p.accessToken) throw new Error('Invalid response from server')
+    localStorage.setItem('tb_token', p.accessToken)
+    localStorage.setItem('tb_user',  JSON.stringify(p))
+    setUser(p)
+    return p
+  }, [])
 
-const register = useCallback(async (form) => {
-  const { data } = await api.post('/auth/register', form)
-  const p = data.data
-  localStorage.setItem('tb_token', p.accessToken)
-  localStorage.setItem('tb_user', JSON.stringify(p))
-  setUser(p)
-  return p
-}, [])
+  const register = useCallback(async (form) => {
+    const { data } = await api.post('/auth/register', form)
+    const p = data.data
+    if (!p || !p.accessToken) throw new Error('Invalid response from server')
+    localStorage.setItem('tb_token', p.accessToken)
+    localStorage.setItem('tb_user',  JSON.stringify(p))
+    setUser(p)
+    return p
+  }, [])
 
-   
   const logout = useCallback(() => {
     localStorage.removeItem('tb_token')
     localStorage.removeItem('tb_user')
@@ -49,7 +52,7 @@ const register = useCallback(async (form) => {
     <AuthContext.Provider value={{
       user, loading,
       isAuthenticated: !!user,
-      isAdmin: user?.role?.includes('ADMIN'),
+      isAdmin: user?.role === 'ADMIN',
       login, register, logout,
     }}>
       {children}
